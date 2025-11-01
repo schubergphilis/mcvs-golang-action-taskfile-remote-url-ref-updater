@@ -1,0 +1,16 @@
+---
+name: mcvs-golang-action-taskfile-remote-url-ref-updater
+description: |
+  Update the mcvs-golang-action REMOTE_URL_REF in a Taskfile.
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v5.0.0
+    - env:
+        DEPENDENCIES_LABEL: dependencies
+        GH_TOKEN: ${{ github.token }}
+        # yamllint disable rule:line-length
+        MCVS_GOLANG_ACTION_TASKFILE_REMOTE_URL_REF_UPDATER_BRANCH: taskfile-remote-url-ref-updater
+        # yamllint enable rule:line-length
+      run: ${GITHUB_ACTION_PATH}/scripts/taskfile-remote-url-ref-updater.sh
+      shell: bash
