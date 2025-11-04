@@ -10,8 +10,9 @@ Dependabot has been updated it.
 
 ## Usage
 
-Create a `.github/workflows/mcvs-golang-action-taskfile-remote-url-ref-updater`
-file with the following content:
+Create a
+`.github/workflows/mcvs-golang-action-taskfile-remote-url-ref-updater.yml` file
+with the following content:
 
 ```zsh
 ---

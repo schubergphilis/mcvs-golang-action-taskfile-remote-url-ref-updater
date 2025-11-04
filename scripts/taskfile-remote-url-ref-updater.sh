@@ -2,7 +2,8 @@
 
 set -xeuo pipefail
 
-readonly PR_TITLE="build(deps): mcvs-golang-action remote_url_ref update in taskfile"
+readonly PR_TITLE="mcvs-golang-action remote_url_ref update in taskfile"
+readonly PR_TITLE_WITH_PREFIX="build(deps): ${PR_TITLE}"
 
 generate_pr_body_with_updates() {
   local new_version="${1}"
@@ -79,17 +80,17 @@ commit_and_push_changes() {
     git config user.name github-actions[bot]
     git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
-  if ! git commit -m "${PR_TITLE}"; then git commit --amend --no-edit; fi
+  if ! git commit -m "${PR_TITLE_WITH_PREFIX}"; then git commit --amend --no-edit; fi
     git push origin ${MCVS_GOLANG_ACTION_TASKFILE_REMOTE_URL_REF_UPDATER_BRANCH} --force-with-lease
 }
 
 create_or_edit_pr() {
-  if gh pr list --json title | jq -e '.[] | select(.title | test("build\\(deps\\): weekly update package versions that cannot be updated by dependabot"))'; then
+  if gh pr list --json title | grep -c "${PR_TITLE_WITH_PREFIX}"; then
     echo "PR exists already. Updating the 'title' and 'description'..."
 
     gh pr edit ${MCVS_GOLANG_ACTION_TASKFILE_REMOTE_URL_REF_UPDATER_BRANCH} \
       --body "${PR_BODY}" \
-      --title "${PR_TITLE}"
+      --title "${PR_TITLE_WITH_PREFIX}"
 
     return
   fi
@@ -105,7 +106,7 @@ create_or_edit_pr() {
     --body "${PR_BODY}" \
     --fill \
     --head "${MCVS_GOLANG_ACTION_TASKFILE_REMOTE_URL_REF_UPDATER_BRANCH}" \
-    --title "${PR_TITLE}" \
+    --title "${PR_TITLE_WITH_PREFIX}" \
     "${label_args[@]}"
 }
 
