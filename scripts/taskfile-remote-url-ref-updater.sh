@@ -75,13 +75,22 @@ github_labels() {
 }
 
 commit_and_push_changes() {
-  if [ -n "$(git status --porcelain)" ]; then echo "There are uncommitted changes."; else echo "No changes to commit." && return; fi
-    git add .
-    git config user.name github-actions[bot]
-    git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+  if [ -z "$(git status --porcelain)" ]; then
+    echo "No changes to commit."
+    exit 0
+  fi
 
-  if ! git commit -m "${PR_TITLE_WITH_PREFIX}"; then git commit --amend --no-edit; fi
-    git push origin ${MCVS_GOLANG_ACTION_TASKFILE_REMOTE_URL_REF_UPDATER_BRANCH} --force-with-lease
+  echo "There are uncommitted changes."
+
+  git add .
+  git config user.name github-actions[bot]
+  git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+  if ! git commit -m "${PR_TITLE_WITH_PREFIX}"; then
+    git commit --amend --no-edit
+  fi
+  
+  git push origin ${MCVS_GOLANG_ACTION_TASKFILE_REMOTE_URL_REF_UPDATER_BRANCH} --force-with-lease
 }
 
 create_or_edit_pr() {
