@@ -121,8 +121,7 @@ main() {
   checkout_branch_required_to_apply_package_version_updates
 
   local version
-  version="$(extract_mcvs_golang_action_latest_version)"
-  if [ -z "${version}" ]; then
+  if ! version="$(extract_mcvs_golang_action_latest_version)" || [[ -z "${version}" ]]; then
     echo "Could not extract version from GitHub API!" >&2
     exit 1
   fi
