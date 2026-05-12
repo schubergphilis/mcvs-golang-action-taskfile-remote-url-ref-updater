@@ -12,10 +12,8 @@ generate_pr_body_with_updates() {
   echo "PR_BODY: ${PR_BODY}"
 }
 
-extract_mcvs_golang_action_version_from_github_workflows_golang() {
-  grep -oE 'schubergphilis/mcvs-golang-action@[^ ]+' .github/workflows/golang.yml \
-    | head -n1 \
-    | sed -E 's/.*@//'
+extract_mcvs_golang_action_latest_version() {
+  gh api repos/schubergphilis/mcvs-golang-action/releases/latest --jq '.tag_name'
 }
 
 update_mcvs_golang_action_ref_in_taskfile() {
@@ -123,9 +121,8 @@ main() {
   checkout_branch_required_to_apply_package_version_updates
 
   local version
-  version="$(extract_mcvs_golang_action_version_from_github_workflows_golang)"
-  if [ -z "${version}" ]; then
-    echo "Could not extract version from workflow!" >&2
+  if ! version="$(extract_mcvs_golang_action_latest_version)" || [[ -z "${version}" ]]; then
+    echo "Could not extract version from GitHub API!" >&2
     exit 1
   fi
 
