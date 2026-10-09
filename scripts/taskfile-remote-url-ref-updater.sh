@@ -24,7 +24,12 @@ update_mcvs_golang_action_ref_in_taskfile() {
     return 1
   fi
 
-  yq -i ".vars.REMOTE_URL_REF = \"${new_version}\"" Taskfile.yml
+  if [[ ! "${new_version}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Invalid version format: '${new_version}'" >&2
+    return 1
+  fi
+
+  NEW_VERSION="${new_version}" yq -i '.vars.REMOTE_URL_REF = strenv(NEW_VERSION)' Taskfile.yml
 }
 
 checkout_branch_required_to_apply_package_version_updates() {
