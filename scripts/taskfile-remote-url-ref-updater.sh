@@ -29,7 +29,17 @@ update_mcvs_golang_action_ref_in_taskfile() {
     return 1
   fi
 
-  NEW_VERSION="${new_version}" yq -i '.vars.REMOTE_URL_REF = strenv(NEW_VERSION)' Taskfile.yml
+  local sha
+  sha="$(gh api "repos/schubergphilis/mcvs-golang-action/commits/${new_version}" --jq '.sha')"
+
+  if [[ ! "${sha}" =~ ^[0-9a-f]{40}$ ]]; then
+    echo "Could not resolve '${new_version}' to a commit SHA: '${sha}'" >&2
+    return 1
+  fi
+
+  NEW_VERSION="${new_version}" NEW_SHA="${sha}" yq -i \
+    '.vars.REMOTE_URL_REF = strenv(NEW_SHA) | .vars.REMOTE_URL_REF line_comment = strenv(NEW_VERSION)' \
+    Taskfile.yml
 }
 
 checkout_branch_required_to_apply_package_version_updates() {
