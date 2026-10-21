@@ -4,6 +4,7 @@ This action will update the `REMOTE_URL_REF` that is defined
 [in the MCVS-golang-action Taskfile][mcvs-golang-action] automatically by
 creating a Pull Request if a newer version of the MCVS-golang action has been
 released. It fetches the latest release tag directly from the GitHub API,
+resolves it to a commit SHA and writes `<sha> # <tag>`,
 so there is no dependency on Dependabot updating workflow files first.
 
 [mcvs-golang-action]: https://github.com/schubergphilis/mcvs-golang-action
